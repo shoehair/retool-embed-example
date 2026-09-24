@@ -1,0 +1,4 @@
+node_modules/
+# Every .env variant holds a real token; .env.example is committed on purpose.
+.env*
+!.env.example

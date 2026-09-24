@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Retool Embed Example — Sign in</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background: #f4f5f7; display: grid; place-items: center; min-height: 100vh; margin: 0; }
+    .card { background: #fff; padding: 2rem; border-radius: 10px; box-shadow: 0 2px 12px rgba(0,0,0,.08); width: 320px; }
+    h1 { font-size: 1.2rem; margin: 0 0 1rem; }
+    label { display: block; font-size: .85rem; margin: .75rem 0 .25rem; color: #444; }
+    input { width: 100%; box-sizing: border-box; padding: .5rem; border: 1px solid #ccc; border-radius: 6px; }
+    button { margin-top: 1.25rem; width: 100%; padding: .6rem; border: 0; border-radius: 6px; background: #3c6df0; color: #fff; font-size: .95rem; cursor: pointer; }
+    .error { color: #c0392b; font-size: .85rem; margin-top: .75rem; }
+    .hint { color: #888; font-size: .8rem; margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <form class="card" method="POST" action="/login">
+    <h1>Retool Embed Example</h1>
+    <label for="username">Username</label>
+    <input id="username" name="username" autocomplete="username" required />
+    <label for="password">Password</label>
+    <input id="password" name="password" type="password" autocomplete="current-password" required />
+    <button type="submit">Sign in</button>
+    <div class="error" id="error" hidden>Invalid username or password.</div>
+    <div class="hint">Credentials come from <code>AUTH_USERNAME</code> / <code>AUTH_PASSWORD</code> in your <code>.env</code>.</div>
+  </form>
+  <script>
+    if (new URLSearchParams(location.search).has('error')) {
+      document.getElementById('error').hidden = false;
+    }
+  </script>
+</body>
+</html>
