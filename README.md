@@ -75,3 +75,5 @@ This is a demo, not a template to ship. The login is a single hardcoded
 credential, sessions live in memory, and there is no rate limiting. If you put
 it anywhere reachable from the internet, anyone who finds it can mint embed
 sessions against your org.
+
+You can use cloudflared tunnel --url http://localhost:4567 to temporarily create a reachable URL for other people to test.
