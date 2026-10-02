@@ -40,20 +40,43 @@
     // Buttons that drive the embedded app over postMessage. The app accepts
     // { type: 'setColor', name } for any of the seven ROYGBIV names.
     const ROYGBIV = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet'];
+
+    // Where to deliver a message. A direct iframe embed is just the frame itself, but the
+    // authenticated embed frames a shell that puts the real app in a nested iframe — and the
+    // shell ignores anything that did not come from that child, so posting to it goes nowhere.
+    // Indexed access on a cross-origin window is allowed, which is how we reach the app.
+    // The app's origin is opaque, so '*' is the only usable targetOrigin.
+    function targets() {
+      const out = [];
+      const shell = frame.contentWindow;
+      if (!shell) return out;
+      try {
+        for (let i = 0; i < shell.frames.length; i++) out.push(shell.frames[i]);
+      } catch {}
+      out.push(shell);
+      return out;
+    }
+
+    function send(message) {
+      const wins = targets();
+      for (const w of wins) {
+        try { w.postMessage(message, '*'); } catch {}
+      }
+      console.log(`[embed] sent ${JSON.stringify(message)} to ${wins.length} window(s)`);
+    }
     const colors = document.getElementById('colors');
     for (const name of ROYGBIV) {
       const b = document.createElement('button');
       b.style.background = name;
       b.title = name;
       b.setAttribute('aria-label', name);
-      b.addEventListener('click', () => {
-        frame.contentWindow.postMessage({ type: 'setColor', name }, '*');
-      });
+      b.addEventListener('click', () => send({ type: 'setColor', name }));
       colors.appendChild(b);
     }
 
     // The app announces itself with colorAppReady once it has loaded.
     window.addEventListener('message', (e) => {
+      console.log('[embed] message from frame:', e.data);
       if (e.data?.type === 'colorAppReady') {
         document.getElementById('ready').textContent = 'app ready';
       }
