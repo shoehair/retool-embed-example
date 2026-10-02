@@ -10,6 +10,9 @@
     header h1 { font-size: 1rem; margin: 0; }
     header .spacer { flex: 1; }
     #who { font-size: .8rem; color: #666; }
+    #ready { font-size: .75rem; color: #999; }
+    #colors { display: flex; gap: .35rem; }
+    #colors button { width: 1.6rem; height: 1.6rem; padding: 0; border-radius: 50%; border: 1px solid rgba(0,0,0,.15); }
     button { padding: .45rem .9rem; border: 0; border-radius: 6px; background: #e8e8e8; color: #333; cursor: pointer; }
     main { flex: 1; display: flex; padding: 1rem; }
     iframe { flex: 1; border: 1px solid #ddd; border-radius: 8px; background: #fff; }
@@ -20,7 +23,9 @@
 <body>
   <header>
     <h1>Retool Embed Example</h1>
+    <div id="colors"></div>
     <div class="spacer"></div>
+    <span id="ready" title="the app posts colorAppReady when it loads">waiting for app…</span>
     <span id="who"></span>
     <form method="POST" action="/logout" style="margin:0"><button>Log out</button></form>
   </header>
@@ -31,6 +36,28 @@
   <script>
     const frame = document.getElementById('frame');
     const status = document.getElementById('status');
+
+    // Buttons that drive the embedded app over postMessage. The app accepts
+    // { type: 'setColor', name } for any of the seven ROYGBIV names.
+    const ROYGBIV = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet'];
+    const colors = document.getElementById('colors');
+    for (const name of ROYGBIV) {
+      const b = document.createElement('button');
+      b.style.background = name;
+      b.title = name;
+      b.setAttribute('aria-label', name);
+      b.addEventListener('click', () => {
+        frame.contentWindow.postMessage({ type: 'setColor', name }, '*');
+      });
+      colors.appendChild(b);
+    }
+
+    // The app announces itself with colorAppReady once it has loaded.
+    window.addEventListener('message', (e) => {
+      if (e.data?.type === 'colorAppReady') {
+        document.getElementById('ready').textContent = 'app ready';
+      }
+    });
 
     fetch('/api/me')
       .then(r => r.json())
