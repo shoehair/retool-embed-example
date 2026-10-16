@@ -76,8 +76,11 @@
 
     // The app announces itself with colorAppReady once it has loaded.
     window.addEventListener('message', (e) => {
+      // Browser extensions broadcast into every frame — React DevTools posts a `hello` on a loop.
+      // Only log messages shaped like ours, or the console fills with their chatter.
+      if (typeof e.data?.type !== 'string') return;
       console.log('[embed] message from frame:', e.data);
-      if (e.data?.type === 'colorAppReady') {
+      if (e.data.type === 'colorAppReady') {
         document.getElementById('ready').textContent = 'app ready';
       }
     });
